@@ -3,6 +3,7 @@ using System.Data;
 using System.Windows;
 using track_widths.Desktop.Views;
 using track_widths.Desktop.ViewModels;
+using track_widths.Core.Services;
 
 
 namespace track_widths
@@ -12,10 +13,20 @@ namespace track_widths
     /// </summary>
     public partial class App : Application
     {
-        track_widths.Desktop.Views.CalculateView view = new()
+        protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
 
-        };
-        
+            var mainWindow = new MainWindow();
+            var navigationService = new NavigationService(mainWindow.MainContent);
+
+
+            mainWindow.Resources.Add("NavigationService", navigationService);
+
+
+            navigationService.NavigateTo<CalculateView>();
+            mainWindow.Show();
+
+        }
     }
 }

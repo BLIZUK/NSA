@@ -12,10 +12,7 @@ namespace track_widths
     /// </summary>
     public partial class App : Application
     {
-        track_widths.Desktop.Views.CalculateView view = new()
-        {
 
-        };
         
     }
 }

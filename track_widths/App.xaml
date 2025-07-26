@@ -6,38 +6,29 @@
              StartupUri="Desktop/Views/mainWindow.xaml">
 
     <Application.Resources>
-        <!-- Исправленное имя ViewModel -->
+
         <DataTemplate DataType="{x:Type vmodels:CalculateViewModel}">
             <views:CalculateView/>
         </DataTemplate>
 
-        <!-- Стиль для текстовых полей ввода -->
+
         <Style x:Key="InputFieldStyle" TargetType="TextBox">
             <Setter Property="Margin" Value="0,5"/>
-            <!-- Вертикальные отступы -->
             <Setter Property="Padding" Value="10"/>
-            <!-- Внутренний отступ текста -->
             <Setter Property="FontSize" Value="14"/>
-            <!-- Размер шрифта -->
             <Setter Property="BorderThickness" Value="1"/>
-            <!-- Толщина границы -->
             <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <!-- Цвет границы -->
         </Style>
+        
         
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Padding" Value="20,10"/>
-            <!-- Большие отступы для акцента -->
             <Setter Property="FontSize" Value="14"/>
-            <!-- Размер текста -->
             <Setter Property="Background" Value="#0078D4"/>
-            <!-- Синий цвет как CTA -->
             <Setter Property="Foreground" Value="White"/>
-            <!-- Белый текст -->
             <Setter Property="BorderThickness" Value="0"/>
-            <!-- Без границ -->
             <Setter Property="Cursor" Value="Hand"/>
-            <!-- Курсор-указатель -->
+
         </Style>
     </Application.Resources>
 </Application>

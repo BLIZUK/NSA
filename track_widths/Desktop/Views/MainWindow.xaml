@@ -6,8 +6,9 @@
         xmlns:views="clr-namespace:track_widths.Desktop.Views"
         xmlns:vmodels="clr-namespace:track_widths.Desktop.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="600">
+        Title="Калькулятор дорожек печатных плат" Height="450" Width="600">
     <Grid>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="253*"/>
             <ColumnDefinition Width="150*"/>
@@ -26,7 +27,7 @@
         </Grid.RowDefinitions>
         
         <ComboBox x:Name="amperageCombobox" 
-                  DisplayMemberPath="Dimension_table"
+                  DisplayMemberPath="Name"
                   SelectedValuePath="Multiplier"
                   Grid.Row="1"
                   Grid.Column="2"
@@ -36,7 +37,7 @@
                   VerticalAlignment="Top"/>
         
         <ComboBox x:Name="widthCombobox"
-                  DisplayMemberPath="Dimension_table"
+                  DisplayMemberPath="Name"
                   SelectedValuePath="Multiplier"
                   Margin="3,3,3,0"
                   Grid.Row="2" Grid.Column="1" 
@@ -63,7 +64,7 @@
         <Label Content="Единицы измерения ширины:" Grid.Row="2" FontSize="14" Margin="33,7,0,6" HorizontalAlignment="Left" Width="202"/>
         <Label Content="Толщина дорожки:" Margin="109,7,0,6" Grid.Row="3" FontSize="14" HorizontalAlignment="Left" Width="132"/>
         <Label Content="Повышение температуры:" Margin="63,10,0,9" Grid.Row="4" FontSize="14" HorizontalAlignment="Left" Width="178"/>
-        <TextBox x:Name="thiknessTextBox"
+        <TextBox x:Name="thicknessTextBox"
             Margin="3,3,3,0"
             TextWrapping="Wrap"
             Text=" "
@@ -77,7 +78,7 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <TextBox x:Name="rise_tTextBox"
+        <TextBox x:Name="riseTempTextBox"
             Margin="3,3,3,0"
             TextWrapping="Wrap"
             Text=" "
@@ -91,7 +92,7 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <TextBox x:Name="ambient_tTextBox"
+        <TextBox x:Name="ambientTempTextBox"
             Margin="3,3,3,0"
             TextWrapping="Wrap"
             Text=" "
@@ -105,12 +106,13 @@
                 </TransformGroup>
             </TextBox.RenderTransform>
         </TextBox>
-        <ComboBox x:Name="thiknessCombobox" DisplayMemberPath="Dimension_table" SelectedValuePath="Multiplier" Grid.Row="3" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
-        <ComboBox x:Name="rise_tCombobox" DisplayMemberPath="Dimension_table" SelectedValuePath="Multiplier" Grid.Row="4" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
-        <ComboBox x:Name="аmbient_tCombobox" DisplayMemberPath="Dimension_table" SelectedValuePath="Multiplier" Grid.Row="5" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="49" VerticalAlignment="Top"/>
-        <ComboBox x:Name="lenghtCombobox" DisplayMemberPath="Dimension_table" SelectedValuePath="Multiplier" Grid.Row="6" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
+        <ComboBox x:Name="thicknessCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="3" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
+        <ComboBox x:Name="riseTempCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="4" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ambientTempCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="5" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="49" VerticalAlignment="Top"/>
+        <ComboBox x:Name="lengthCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="6" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
         <Label Content="Длина дорожки:" Margin="121,7,0,4" Grid.Row="6" FontSize="14" HorizontalAlignment="Left" Width="115"/>
         <Label Content="Температура окружающей среды:" Margin="12,10,0,9" Grid.Row="5" FontSize="14" HorizontalAlignment="Left" Width="229"/>
+        
         <Button x:Name="CountButton" 
                     Command="{Binding SearchRidesCommand}"
                     Style="{StaticResource PrimaryButtonStyle}"
@@ -124,7 +126,7 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <TextBox x:Name="lenghtTextBox"
+        <TextBox x:Name="lengthTextBox"
             Margin="3,3,3,0"
             TextWrapping="Wrap"
             Text=" "

@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,7 +42,7 @@ namespace track_widths.Desktop.Views
             {
                 new() {Name = "A", Multiplier = 1.0},
                 new() {Name = "mA", Multiplier = 0.001},
-                new() {Name = "μA", Multiplier = 0.000001}
+                new() {Name = "mkA", Multiplier = 0.000001}
             };
 
             // Единицы ширины (для вывода)

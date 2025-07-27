@@ -6,9 +6,140 @@
         xmlns:views="clr-namespace:track_widths.Desktop.Views"
         xmlns:vmodels="clr-namespace:track_widths.Desktop.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Калькулятор дорожек печатных плат" Height="450" Width="600">
     <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="253*"/>
+            <ColumnDefinition Width="150*"/>
+            <ColumnDefinition Width="150*"/>
+            <ColumnDefinition Width="46*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="24*"/>
+        </Grid.RowDefinitions>
+        
+        <ComboBox x:Name="amperageCombobox" 
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Multiplier"
+                  Grid.Row="1"
+                  Grid.Column="2"
+                  Margin="3,3,3,0"
+                  FontSize="14"
+                  Height="49"
+                  VerticalAlignment="Top"/>
+        
+        <ComboBox x:Name="widthCombobox"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Multiplier"
+                  Margin="3,3,3,0"
+                  Grid.Row="2" Grid.Column="1" 
+                  FontSize="14" Height="48"
+                  VerticalAlignment="Top"/>
+        
+        <TextBox x:Name="amperageTextBox"
+                 Margin="3,3,3,0"
+                 TextWrapping="Wrap"
+                 Text=" "
+                 Style="{StaticResource InputFieldStyle}" Grid.Row="1" Grid.Column="1" RenderTransformOrigin="0.5,0.5" Height="49" VerticalAlignment="Top">
+            
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.266"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="-0.095"/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+        <Label Content="Максимальный ток :" Margin="94,7,0,6" Grid.Row="1" FontSize="14" HorizontalAlignment="Left" Width="142"/>
+        <Label Content="Входные данные:" Margin="0,9,0,10" FontSize="14" HorizontalAlignment="Center" Width="126" Grid.Column="1"/>
+        <Label Content="Единицы измерения ширины:" Grid.Row="2" FontSize="14" Margin="33,7,0,6" HorizontalAlignment="Left" Width="202"/>
+        <Label Content="Толщина дорожки:" Margin="103,7,0,6" Grid.Row="3" FontSize="14" HorizontalAlignment="Left" Width="132"/>
+        <Label Content="Повышение температуры:" Margin="59,10,0,9" Grid.Row="4" FontSize="14" HorizontalAlignment="Left" Width="178"/>
+        <TextBox x:Name="thicknessTextBox"
+            Margin="3,3,3,0"
+            TextWrapping="Wrap"
+            Text=" "
+            Style="{StaticResource InputFieldStyle}" Grid.Row="3" Grid.Column="1" RenderTransformOrigin="0.5,0.5" Height="48" VerticalAlignment="Top">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.266"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="-0.095"/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+        <TextBox x:Name="riseTempTextBox"
+            Margin="3,3,3,0"
+            TextWrapping="Wrap"
+            Text=" "
+            Style="{StaticResource InputFieldStyle}" Grid.Row="4" Grid.Column="1" RenderTransformOrigin="0.5,0.5" Height="48" VerticalAlignment="Top">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.266"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="-0.095"/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+        <TextBox x:Name="ambientTempTextBox"
+            Margin="3,3,3,0"
+            TextWrapping="Wrap"
+            Text=" "
+            Style="{StaticResource InputFieldStyle}" Grid.Row="5" Grid.Column="1" RenderTransformOrigin="0.5,0.5" Height="49" VerticalAlignment="Top">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.266"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="-0.095"/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+        <ComboBox x:Name="thicknessCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="3" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
+        <ComboBox x:Name="riseTempCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="4" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ambientTempCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="5" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="49" VerticalAlignment="Top"/>
+        <ComboBox x:Name="lengthCombobox" DisplayMemberPath="Name" SelectedValuePath="Multiplier" Grid.Row="6" Grid.Column="2" Margin="3,3,3,0" FontSize="14" Height="48" VerticalAlignment="Top"/>
+        <Label Content="Длина дорожки:" Margin="121,7,0,4" Grid.Row="6" FontSize="14" HorizontalAlignment="Left" Width="115"/>
+        <Label Content="Температура окружающей среды:" Margin="9,10,0,9" Grid.Row="5" FontSize="14" HorizontalAlignment="Left" Width="229"/>
 
+        <Button x:Name="CountButton"
+                Click="CountButton_Click"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="1,8,32,0" Grid.Row="7" Grid.Column="1" RenderTransformOrigin="0.5,0.5" Content="Расчет" Height="36" VerticalAlignment="Top">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleY="1"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+        <TextBox x:Name="lengthTextBox"
+            Margin="3,3,3,0"
+            TextWrapping="Wrap"
+            Text=" "
+            Style="{StaticResource InputFieldStyle}" Grid.Row="6" Grid.Column="1" RenderTransformOrigin="0.5,0.5" Height="48" VerticalAlignment="Top">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.266"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="-0.095"/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
 
     </Grid>
 </Window>

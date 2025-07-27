@@ -58,7 +58,7 @@ namespace track_widths.Desktop.Views
             // Единицы толщины
             thicknessCombobox.ItemsSource = new UnitItem[]
             {
-                new() {Name = "унция/фут²", Multiplier = 1.37},
+                new() {Name = "унция/фут²", Multiplier =  1.378},
                 new() {Name = "мил", Multiplier = 0.0254},
                 new() {Name = "мм", Multiplier = 1.0},
                 new() {Name = "мкм", Multiplier = 0.001},
@@ -138,7 +138,6 @@ namespace track_widths.Desktop.Views
 
 
 
-                // Формирование результатов
                 string result = $"ВНЕШНИЕ СЛОИ:\n" +
                                $"Ширина дорожки: {extWidth:F3} {((UnitItem)widthCombobox.SelectedItem).Name}\n" +
                                $"Температура: {extResults.Temp:F1} °C\n" +
@@ -153,9 +152,12 @@ namespace track_widths.Desktop.Views
                                $"Падение напряжения: {intResults.VoltageDrop:F4} В\n" +
                                $"Рассеиваемая мощность: {intResults.Power:F4} Вт";
 
-                // Отображение результатов
-                //resultTextBlock.Text = result;
-                //resultsGroup.Visibility = Visibility.Visible;
+                // Открываем окно с результатами
+                var resultsWindow = new ResultsWindow(result)
+                {
+                    Owner = this // Делаем главное окно владельцем
+                };
+                resultsWindow.Show();
             }
             catch (Exception ex)
             {
@@ -183,6 +185,10 @@ namespace track_widths.Desktop.Views
             double b = 0.44;
             double c = 0.725;
 
+            // Проверка нулевых значений
+            if (tempRise <= 0) throw new ArgumentException("Повышение температуры должно быть положительным");
+            if (thickness <= 0) throw new ArgumentException("Толщина должна быть положительной");
+
             // Расчет площади поперечного сечения (в милах²)
             double area = Math.Pow(current / (k * Math.Pow(tempRise, b)), 1.0 / c);
 
@@ -202,7 +208,7 @@ namespace track_widths.Desktop.Views
             const double resistivity = 0.0175;
 
             // Расчет сопротивления
-            double resistance = resistivity * lengthM / (areaMm2 / 1000000);
+            double resistance = resistivity * lengthM / areaMm2;
 
             // Расчет падения напряжения
             double voltageDrop = current * resistance;

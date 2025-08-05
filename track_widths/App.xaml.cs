@@ -2,7 +2,6 @@
 using System.Data;
 using System.Windows;
 using track_widths.Desktop.Views;
-using track_widths.Desktop.ViewModels;
 
 
 namespace track_widths

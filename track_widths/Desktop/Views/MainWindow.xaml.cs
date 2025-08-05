@@ -69,7 +69,7 @@ namespace track_widths.Desktop.Views
             var tempUnits = new UnitItem[]
             {
                 new() {Name = "°C", Multiplier = 1.0},
-                new() {Name = "K", Multiplier = 1.0}
+                new() {Name = "°K", Multiplier = 1.0}
             };
 
             riseTempCombobox.ItemsSource = tempUnits;
@@ -107,19 +107,19 @@ namespace track_widths.Desktop.Views
                 double length = GetValue(lengthTextBox, lengthCombobox);
 
                 // Обработка единиц температуры
-                if (((UnitItem)ambientTempCombobox.SelectedItem).Name == "K")
+                if (((UnitItem)ambientTempCombobox.SelectedItem).Name == "°K")
                     ambientTemp -= 273.15;
 
-                if (((UnitItem)riseTempCombobox.SelectedItem).Name == "K")
-                    tempRise = ambientTemp + tempRise - 273.15 - ambientTemp;
+                if (((UnitItem)riseTempCombobox.SelectedItem).Name == "°K")
+                    tempRise -= 273.15;
 
                 // Конвертация толщины в милы
                 if (thicknessCombobox.SelectedItem is UnitItem thicknessUnit)
                 {
                     if (thicknessUnit.Name == "унция/фут²")
-                        thickness *= 1.37; // Конвертация унций в милы
+                        thickness *= 1.37; 
                     else
-                        thickness = thickness / 0.0254; // Конвертация в милы
+                        thickness /=  0.0254; 
                 }
 
 
@@ -155,7 +155,7 @@ namespace track_widths.Desktop.Views
                 // Открываем окно с результатами
                 var resultsWindow = new ResultsWindow(result)
                 {
-                    Owner = this // Делаем главное окно владельцем
+                    Owner = this 
                 };
                 resultsWindow.Show();
             }

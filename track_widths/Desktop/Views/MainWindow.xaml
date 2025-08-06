@@ -88,7 +88,7 @@
                   VerticalAlignment="Top"/>
 
         <!--Текстовые окна-->
-        
+
         <TextBox x:Name="amperageTextBox"
                  Margin="3,3,3,0"
                  TextWrapping="Wrap"
@@ -98,7 +98,9 @@
                  RenderTransformOrigin="0.5,0.5" 
                  Height="48" 
                  VerticalAlignment="Top"
-                 Style="{StaticResource InputFieldStyle}">
+                 Style="{StaticResource InputFieldStyle}"
+                 PreviewTextInput="NumberValidationTextBox"
+                 LostFocus="TextBox_LostFocus" >
         </TextBox>
 
         <TextBox x:Name="thicknessTextBox"
@@ -110,7 +112,9 @@
                  RenderTransformOrigin="0.5,0.5"
                  Height="48"
                  VerticalAlignment="Top"
-                 Style="{StaticResource InputFieldStyle}" >
+                 Style="{StaticResource InputFieldStyle}"
+                 PreviewTextInput="NumberValidationTextBox"
+                 LostFocus="TextBox_LostFocus" >
         </TextBox>
 
         <TextBox x:Name="riseTempTextBox"
@@ -122,7 +126,9 @@
                  RenderTransformOrigin="0.5,0.5" 
                  Height="48" 
                  VerticalAlignment="Top"
-                 Style="{StaticResource InputFieldStyle}">
+                 Style="{StaticResource InputFieldStyle}"
+                 PreviewTextInput="NumberValidationTextBox"
+                 LostFocus="TextBox_LostFocus">
         </TextBox>
 
         <TextBox x:Name="ambientTempTextBox"
@@ -134,7 +140,9 @@
                  RenderTransformOrigin="0.5,0.5"
                  Height="49" 
                  VerticalAlignment="Top"
-                 Style="{StaticResource InputFieldStyle}">
+                 Style="{StaticResource InputFieldStyle}"
+                 PreviewTextInput="NumberValidationTextBox"
+                 LostFocus="TextBox_LostFocus">
         </TextBox>
 
         <TextBox x:Name="lengthTextBox"
@@ -146,7 +154,9 @@
                  RenderTransformOrigin="0.5,0.5" 
                  Height="48" 
                  VerticalAlignment="Top"
-                 Style="{StaticResource InputFieldStyle}" >
+                 Style="{StaticResource InputFieldStyle}" 
+                 PreviewTextInput="NumberValidationTextBox"
+                 LostFocus="TextBox_LostFocus">
         </TextBox>
 
         <!---Надписи-->

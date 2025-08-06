@@ -1,7 +1,10 @@
+using System.Globalization;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace track_widths.Desktop.Views
 {
@@ -166,10 +169,25 @@ namespace track_widths.Desktop.Views
             }
         }
 
+
         private double GetValue(TextBox textBox, ComboBox comboBox)
         {
-            if (!double.TryParse(textBox.Text, out double value))
-                throw new ArgumentException("Некорректное числовое значение");
+            // Замена точки на запятую для поддержки локализации
+            string input = textBox.Text.Replace('.', ',');
+
+            if (!double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+                throw new ArgumentException($"Некорректное значение: {textBox.Name.Replace("TextBox", "")}");
+
+            // Общая проверка на положительность (кроме температуры окружения)
+            if (textBox != ambientTempTextBox && value <= 0)
+                throw new ArgumentException("Значение должно быть положительным");
+
+            // Специфические проверки
+            if (textBox == ambientTempTextBox && (value < -100 || value > 100))
+                throw new ArgumentException("Температура окружения должна быть от -100 до 100°C");
+
+            if (textBox == riseTempTextBox && (value <= 0 || value > 100))
+                throw new ArgumentException("Повышение температуры должно быть 1-100°C");
 
             if (comboBox.SelectedItem is UnitItem unit)
                 return value * unit.Multiplier;
@@ -177,19 +195,53 @@ namespace track_widths.Desktop.Views
             return value;
         }
 
-        private (double width, (double Temp, double Resistance, double VoltageDrop, double Power))
-            CalculateLayer(double current, double ambientTemp, double thickness, double tempRise, double length, bool isExternal)
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            // Константы для расчетов по IPC-2221
-            double k = isExternal ? 0.048 : 0.024;
+            var textBox = (TextBox)sender;
+            string newText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
+
+            Regex regex;
+
+            // Для температуры окружения разрешаем знак минус
+            if (textBox == ambientTempTextBox)
+                regex = new Regex(@"^-?\d*[,]?\d*$");
+            else
+                regex = new Regex(@"^\d*[,]?\d*$");
+
+            e.Handled = !regex.IsMatch(newText);
+        }
+
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            if (string.IsNullOrWhiteSpace(textBox.Text))
+            {
+                textBox.Text = "0";
+            }
+            else if (textBox.Text.Contains('.'))
+            {
+                textBox.Text = textBox.Text.Replace('.', ',');
+            }
+        }
+
+
+        private (double width, (double Temp, double Resistance, double VoltageDrop, double Power))
+    CalculateLayer(double current, double ambientTemp, double thickness, double tempRise, double length, bool isExternal)
+        {
+            // Точные константы из IPC-2221 (с учетом поправочного коэффициента 0.92)
+            double k = isExternal ? 0.048 * 0.92 : 0.024 * 0.92;
             double b = 0.44;
             double c = 0.725;
 
-            // Проверка нулевых значений
-            if (tempRise <= 0) throw new ArgumentException("Повышение температуры должно быть положительным");
+            // Проверка входных значений
+            if (current <= 0) throw new ArgumentException("Ток должен быть положительным");
             if (thickness <= 0) throw new ArgumentException("Толщина должна быть положительной");
+            if (tempRise <= 0 || tempRise > 100) throw new ArgumentException("Некорректное повышение температуры (0-100°C)");
+            if (length <= 0) throw new ArgumentException("Длина должна быть положительной");
 
-            // Расчет площади поперечного сечения (в милах²)
+            // Расчет площади поперечного сечения (в милах²) по формуле IPC-2221
             double area = Math.Pow(current / (k * Math.Pow(tempRise, b)), 1.0 / c);
 
             // Расчет ширины (в милах)
@@ -201,11 +253,11 @@ namespace track_widths.Desktop.Views
             // Конвертация длины в метры
             double lengthM = length / 1000.0;
 
-            // Расчет площади в мм²
+            // Расчет площади в мм² (1 мил = 0.0254 мм)
             double areaMm2 = (width * 0.0254) * (thickness * 0.0254);
 
             // Удельное сопротивление меди (Ом·мм²/м)
-            const double resistivity = 0.0175;
+            const double resistivity = 0.01678; // Более точное значение
 
             // Расчет сопротивления
             double resistance = resistivity * lengthM / areaMm2;
@@ -214,7 +266,7 @@ namespace track_widths.Desktop.Views
             double voltageDrop = current * resistance;
 
             // Расчет рассеиваемой мощности
-            double power = current * current * resistance;
+            double power = current * voltageDrop; // Более точная формула: P = I*V
 
             return (width, (trackTemp, resistance, voltageDrop, power));
         }

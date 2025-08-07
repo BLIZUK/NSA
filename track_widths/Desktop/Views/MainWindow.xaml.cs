@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Numerics;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,12 +11,12 @@ namespace track_widths.Desktop.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public int amperage;
-        public int width;
-        public int thikness;
-        public int rise_t;
-        public int аmbient_t;
-        public int lenght;
+        public double Amperage;
+        public double TraceWidth;
+        public double TraceThikness;
+        public double TraceLenght;
+        public double RiseTemperature;
+        public double AmbientTemperature;
 
         public class UnitItem
         {
@@ -38,8 +36,10 @@ namespace track_widths.Desktop.Views
         }
 
 
+
         public void InitializeComboboxes()
         {
+
             // Единицы тока
             amperageCombobox.ItemsSource = new UnitItem[]
             {
@@ -47,6 +47,7 @@ namespace track_widths.Desktop.Views
                 new() {Name = "mA", Multiplier = 0.001},
                 new() {Name = "mkA", Multiplier = 0.000001}
             };
+
 
             // Единицы ширины (для вывода)
             widthCombobox.ItemsSource = new UnitItem[]
@@ -58,15 +59,17 @@ namespace track_widths.Desktop.Views
                 new() {Name = "дюйм", Multiplier = 25.4},
             };
 
+
             // Единицы толщины
             thicknessCombobox.ItemsSource = new UnitItem[]
             {
-                new() {Name = "унция/фут²", Multiplier =  1.378},
-                new() {Name = "мил", Multiplier = 0.0254},
-                new() {Name = "мм", Multiplier = 1.0},
-                new() {Name = "мкм", Multiplier = 0.001},
-                new() {Name = "дюйм", Multiplier = 25.4}
+                new() {Name = "унция/фут²", Multiplier = 1.37},
+                new() {Name = "мил", Multiplier = 1.0},
+                new() {Name = "мм", Multiplier = 39.3701},    // 1 мм = 39.3701 мил
+                new() {Name = "мкм", Multiplier = 0.0393701}, // 1 мкм = 0.0393701 мил
+                new() {Name = "дюйм", Multiplier = 1000.0}    // 1 дюйм = 1000 мил
             };
+
 
             // Единицы температуры
             var tempUnits = new UnitItem[]
@@ -75,8 +78,10 @@ namespace track_widths.Desktop.Views
                 new() {Name = "°K", Multiplier = 1.0}
             };
 
+
             riseTempCombobox.ItemsSource = tempUnits;
             ambientTempCombobox.ItemsSource = tempUnits;
+
 
             // Единицы длины
             lengthCombobox.ItemsSource = new UnitItem[]
@@ -102,6 +107,13 @@ namespace track_widths.Desktop.Views
         {
             try
             {
+                // Проверка заполненности всех полей
+                if (string.IsNullOrWhiteSpace(amperageTextBox.Text)) throw new ArgumentException("Введите значение тока");
+                if (string.IsNullOrWhiteSpace(thicknessTextBox.Text)) throw new ArgumentException("Введите толщину дорожки");
+                if (string.IsNullOrWhiteSpace(riseTempTextBox.Text)) throw new ArgumentException("Введите повышение температуры");
+                if (string.IsNullOrWhiteSpace(ambientTempTextBox.Text)) throw new ArgumentException("Введите температуру окружения");
+                if (string.IsNullOrWhiteSpace(lengthTextBox.Text)) throw new ArgumentException("Введите длину дорожки");
+
                 // Получение введенных значений
                 double current = GetValue(amperageTextBox, amperageCombobox);
                 double thickness = GetValue(thicknessTextBox, thicknessCombobox);
@@ -116,28 +128,28 @@ namespace track_widths.Desktop.Views
                 if (((UnitItem)riseTempCombobox.SelectedItem).Name == "°K")
                     tempRise -= 273.15;
 
-                // Конвертация толщины в милы
-                if (thicknessCombobox.SelectedItem is UnitItem thicknessUnit)
-                {
-                    if (thicknessUnit.Name == "унция/фут²")
-                        thickness *= 1.37; 
-                    else
-                        thickness /=  0.0254; 
-                }
-
-
 
                 // Расчет параметров
                 var (extWidth, extResults) = CalculateLayer(current, ambientTemp ,thickness, tempRise, length, isExternal: true);
                 var (intWidth, intResults) = CalculateLayer(current, ambientTemp, thickness, tempRise, length, isExternal: false);
 
 
-
-
                 // Конвертация ширины в выбранные единицы
                 double widthMultiplier = ((UnitItem)widthCombobox.SelectedItem).Multiplier;
                 extWidth = extWidth * 0.0254 / widthMultiplier;
                 intWidth = intWidth * 0.0254 / widthMultiplier;
+
+                // В CountButton_Click после расчета
+                double expectedWidth = 0.32; // Ожидаемое значение для 1А, 10°C, 35мкм
+                double actualWidth = extWidth * 0.0254; // Конвертация в мм
+
+                if (Math.Abs(actualWidth - expectedWidth) > 0.01)
+                {
+                    MessageBox.Show($"Возможная погрешность: ожидалось ~{expectedWidth} мм, получено {actualWidth:F2} мм",
+                                   "Проверка точности",
+                                   MessageBoxButton.OK,
+                                   MessageBoxImage.Information);
+                }
 
 
 
@@ -170,6 +182,7 @@ namespace track_widths.Desktop.Views
         }
 
 
+        // Валидация данных
         private double GetValue(TextBox textBox, ComboBox comboBox)
         {
             // Замена точки на запятую для поддержки локализации
@@ -225,6 +238,17 @@ namespace track_widths.Desktop.Views
                 textBox.Text = textBox.Text.Replace('.', ',');
             }
         }
+
+
+        private void TextBox_PreviewMouseLeftButtonDown (object sender, MouseButtonEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            if (textBox.Text == "0")
+            {
+                textBox.Text = "";
+            }
+        }                                                   
+        // <- Валидация данных
 
 
         private (double width, (double Temp, double Resistance, double VoltageDrop, double Power))

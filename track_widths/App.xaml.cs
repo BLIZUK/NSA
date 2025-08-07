@@ -1,6 +1,8 @@
 ﻿using System.Configuration;
 using System.Data;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Markup;
 using track_widths.Desktop.Views;
 
 
@@ -11,7 +13,19 @@ namespace track_widths
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            // Установка культуры для всего приложения
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("ru-RU");
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("ru-RU");
 
-        
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+                typeof(FrameworkElement),
+                new FrameworkPropertyMetadata(
+                    XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+
+            base.OnStartup(e);
+        }
+
     }
 }

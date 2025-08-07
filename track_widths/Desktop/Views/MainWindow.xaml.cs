@@ -11,6 +11,8 @@ namespace track_widths.Desktop.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        #region Поля
         public double Amperage;
         public double TraceWidth;
         public double TraceThikness;
@@ -23,18 +25,15 @@ namespace track_widths.Desktop.Views
             public string Name { get; set; } = " ";
             public double Multiplier { get; set; } = 0.0;
         }
-
-
-        
+        #endregion
 
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeComboboxes();
-           
-        }
 
+        }
 
 
         public void InitializeComboboxes()
@@ -103,6 +102,79 @@ namespace track_widths.Desktop.Views
         }
 
 
+        #region Валидация данных
+        //Получение значений
+        private double GetValue(TextBox textBox, ComboBox comboBox)
+        {
+            // Замена точки на запятую для поддержки локализации
+            string input = textBox.Text.Replace('.', ',');
+
+            if (!double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+                throw new ArgumentException($"Введите значение: {textBox.Name.Replace("TextBox", "")}");
+
+            // Общая проверка на положительность (кроме температуры окружения)
+            if (textBox != ambientTempTextBox && value <= 0)
+                throw new ArgumentException("Значение должно быть положительным");
+
+            // Специфические проверки
+            if (textBox == ambientTempTextBox && (value < -100 || value > 100))
+                throw new ArgumentException("Температура окружения должна быть от -100 до 100°C");
+
+            if (textBox == riseTempTextBox && (value <= 0 || value > 100))
+                throw new ArgumentException("Повышение температуры должно быть 1-100°C");
+
+            if (comboBox.SelectedItem is UnitItem unit)
+                return value * unit.Multiplier;
+
+            return value;
+        }
+
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            string newText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
+
+            Regex regex;
+
+            // Для температуры окружения разрешаем знак минус
+            if (textBox == ambientTempTextBox)
+                regex = new Regex(@"^-?\d*[.,]?\d*$");
+            else
+                regex = new Regex(@"^\d*[.,]?\d*$");
+
+            e.Handled = !regex.IsMatch(newText);
+        }
+
+
+        //Подстановка * в пустое при клике в другое поле
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            if (string.IsNullOrWhiteSpace(textBox.Text))
+            {
+                textBox.Text = "*";
+            }
+            else if (textBox.Text.Contains('.'))
+            {
+                textBox.Text = textBox.Text.Replace('.', ',');
+            }
+        }
+
+
+        //Удаление * при клике на пустое поле
+        private void TextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            if (textBox.Text == "*")
+            {
+                textBox.Text = "";
+            }
+        }
+        #endregion
+
+
+        #region Расчет данных
         private void CountButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -115,23 +187,23 @@ namespace track_widths.Desktop.Views
                 if (string.IsNullOrWhiteSpace(lengthTextBox.Text)) throw new ArgumentException("Введите длину дорожки");
 
                 // Получение введенных значений
-                double current = GetValue(amperageTextBox, amperageCombobox);
-                double thickness = GetValue(thicknessTextBox, thicknessCombobox);
-                double tempRise = GetValue(riseTempTextBox, riseTempCombobox);
-                double ambientTemp = GetValue(ambientTempTextBox, ambientTempCombobox);
-                double length = GetValue(lengthTextBox, lengthCombobox);
+                double GeyAmperage = GetValue(amperageTextBox, amperageCombobox);
+                double GetThickness = GetValue(thicknessTextBox, thicknessCombobox);
+                double GetRiseTemperature = GetValue(riseTempTextBox, riseTempCombobox);
+                double GetAmbientTemperature = GetValue(ambientTempTextBox, ambientTempCombobox);
+                double GetLength = GetValue(lengthTextBox, lengthCombobox);
 
                 // Обработка единиц температуры
                 if (((UnitItem)ambientTempCombobox.SelectedItem).Name == "°K")
-                    ambientTemp -= 273.15;
+                    GetAmbientTemperature -= 273.15;
 
                 if (((UnitItem)riseTempCombobox.SelectedItem).Name == "°K")
-                    tempRise -= 273.15;
+                    GetRiseTemperature -= 273.15;
 
 
                 // Расчет параметров
-                var (extWidth, extResults) = CalculateLayer(current, ambientTemp ,thickness, tempRise, length, isExternal: true);
-                var (intWidth, intResults) = CalculateLayer(current, ambientTemp, thickness, tempRise, length, isExternal: false);
+                var (extWidth, extResults) = CalculateLayer(GeyAmperage, GetAmbientTemperature, GetThickness, GetRiseTemperature, GetLength, isExternal: true);
+                var (intWidth, intResults) = CalculateLayer(GeyAmperage, GetAmbientTemperature, GetThickness, GetRiseTemperature, GetLength, isExternal: false);
 
 
                 // Конвертация ширины в выбранные единицы
@@ -170,7 +242,7 @@ namespace track_widths.Desktop.Views
                 // Открываем окно с результатами
                 var resultsWindow = new ResultsWindow(result)
                 {
-                    Owner = this 
+                    Owner = this
                 };
                 resultsWindow.Show();
             }
@@ -180,75 +252,6 @@ namespace track_widths.Desktop.Views
                                 MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-
-        // Валидация данных
-        private double GetValue(TextBox textBox, ComboBox comboBox)
-        {
-            // Замена точки на запятую для поддержки локализации
-            string input = textBox.Text.Replace('.', ',');
-
-            if (!double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
-                throw new ArgumentException($"Некорректное значение: {textBox.Name.Replace("TextBox", "")}");
-
-            // Общая проверка на положительность (кроме температуры окружения)
-            if (textBox != ambientTempTextBox && value <= 0)
-                throw new ArgumentException("Значение должно быть положительным");
-
-            // Специфические проверки
-            if (textBox == ambientTempTextBox && (value < -100 || value > 100))
-                throw new ArgumentException("Температура окружения должна быть от -100 до 100°C");
-
-            if (textBox == riseTempTextBox && (value <= 0 || value > 100))
-                throw new ArgumentException("Повышение температуры должно быть 1-100°C");
-
-            if (comboBox.SelectedItem is UnitItem unit)
-                return value * unit.Multiplier;
-
-            return value;
-        }
-
-
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            var textBox = (TextBox)sender;
-            string newText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
-
-            Regex regex;
-
-            // Для температуры окружения разрешаем знак минус
-            if (textBox == ambientTempTextBox)
-                regex = new Regex(@"^-?\d*[,]?\d*$");
-            else
-                regex = new Regex(@"^\d*[,]?\d*$");
-
-            e.Handled = !regex.IsMatch(newText);
-        }
-
-
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var textBox = (TextBox)sender;
-            if (string.IsNullOrWhiteSpace(textBox.Text))
-            {
-                textBox.Text = "0";
-            }
-            else if (textBox.Text.Contains('.'))
-            {
-                textBox.Text = textBox.Text.Replace('.', ',');
-            }
-        }
-
-
-        private void TextBox_PreviewMouseLeftButtonDown (object sender, MouseButtonEventArgs e)
-        {
-            var textBox = (TextBox)sender;
-            if (textBox.Text == "0")
-            {
-                textBox.Text = "";
-            }
-        }                                                   
-        // <- Валидация данных
 
 
         private (double width, (double Temp, double Resistance, double VoltageDrop, double Power))
@@ -294,5 +297,6 @@ namespace track_widths.Desktop.Views
 
             return (width, (trackTemp, resistance, voltageDrop, power));
         }
+        #endregion
     }
 }

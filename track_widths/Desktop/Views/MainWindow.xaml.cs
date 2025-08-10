@@ -20,7 +20,7 @@ namespace track_widths.Desktop.Views
         public double RiseTemperature;
         public double AmbientTemperature;
 
-        public class UnitItem
+        public class UnitItem_OLD
         {
             public string Name { get; set; } = " ";
             public double Multiplier { get; set; } = 0.0;
@@ -40,7 +40,7 @@ namespace track_widths.Desktop.Views
         {
 
             // Единицы тока
-            amperageCombobox.ItemsSource = new UnitItem[]
+            amperageCombobox.ItemsSource = new UnitItem_OLD[]
             {
                 new() {Name = "A", Multiplier = 1.0},
                 new() {Name = "mA", Multiplier = 0.001},
@@ -49,7 +49,7 @@ namespace track_widths.Desktop.Views
 
 
             // Единицы ширины (для вывода)
-            widthCombobox.ItemsSource = new UnitItem[]
+            widthCombobox.ItemsSource = new UnitItem_OLD[]
             {
                 new() {Name = "мил", Multiplier = 0.0254},
                 new() {Name = "см", Multiplier = 10.0},
@@ -60,7 +60,7 @@ namespace track_widths.Desktop.Views
 
 
             // Единицы толщины
-            thicknessCombobox.ItemsSource = new UnitItem[]
+            thicknessCombobox.ItemsSource = new UnitItem_OLD[]
             {
                 new() {Name = "унция/фут²", Multiplier = 1.37},
                 new() {Name = "мил", Multiplier = 1.0},
@@ -71,7 +71,7 @@ namespace track_widths.Desktop.Views
 
 
             // Единицы температуры
-            var tempUnits = new UnitItem[]
+            var tempUnits = new UnitItem_OLD[]
             {
                 new() {Name = "°C", Multiplier = 1.0},
                 new() {Name = "°K", Multiplier = 1.0}
@@ -83,7 +83,7 @@ namespace track_widths.Desktop.Views
 
 
             // Единицы длины
-            lengthCombobox.ItemsSource = new UnitItem[]
+            lengthCombobox.ItemsSource = new UnitItem_OLD[]
             {
                 new() {Name = "мил", Multiplier = 0.0254},
                 new() {Name = "см", Multiplier = 10.0},
@@ -103,6 +103,7 @@ namespace track_widths.Desktop.Views
 
 
         #region Валидация данных
+
         //Получение значений
         private double GetValue(TextBox textBox, ComboBox comboBox)
         {
@@ -123,7 +124,7 @@ namespace track_widths.Desktop.Views
             if (textBox == riseTempTextBox && (value <= 0 || value > 100))
                 throw new ArgumentException("Повышение температуры должно быть 1-100°C");
 
-            if (comboBox.SelectedItem is UnitItem unit)
+            if (comboBox.SelectedItem is UnitItem_OLD unit)
                 return value * unit.Multiplier;
 
             return value;
@@ -194,46 +195,30 @@ namespace track_widths.Desktop.Views
                 double GetLength = GetValue(lengthTextBox, lengthCombobox);
 
                 // Обработка единиц температуры
-                if (((UnitItem)ambientTempCombobox.SelectedItem).Name == "°K")
+                if (((UnitItem_OLD)ambientTempCombobox.SelectedItem).Name == "°K")
                     GetAmbientTemperature -= 273.15;
 
-                if (((UnitItem)riseTempCombobox.SelectedItem).Name == "°K")
+                if (((UnitItem_OLD)riseTempCombobox.SelectedItem).Name == "°K")
                     GetRiseTemperature -= 273.15;
-
 
                 // Расчет параметров
                 var (extWidth, extResults) = CalculateLayer(GeyAmperage, GetAmbientTemperature, GetThickness, GetRiseTemperature, GetLength, isExternal: true);
                 var (intWidth, intResults) = CalculateLayer(GeyAmperage, GetAmbientTemperature, GetThickness, GetRiseTemperature, GetLength, isExternal: false);
 
-
                 // Конвертация ширины в выбранные единицы
-                double widthMultiplier = ((UnitItem)widthCombobox.SelectedItem).Multiplier;
+                double widthMultiplier = ((UnitItem_OLD)widthCombobox.SelectedItem).Multiplier;
                 extWidth = extWidth * 0.0254 / widthMultiplier;
                 intWidth = intWidth * 0.0254 / widthMultiplier;
 
-                // В CountButton_Click после расчета
-                double expectedWidth = 0.32; // Ожидаемое значение для 1А, 10°C, 35мкм
-                double actualWidth = extWidth * 0.0254; // Конвертация в мм
-
-                if (Math.Abs(actualWidth - expectedWidth) > 0.01)
-                {
-                    MessageBox.Show($"Возможная погрешность: ожидалось ~{expectedWidth} мм, получено {actualWidth:F2} мм",
-                                   "Проверка точности",
-                                   MessageBoxButton.OK,
-                                   MessageBoxImage.Information);
-                }
-
-
-
                 string result = $"ВНЕШНИЕ СЛОИ:\n" +
-                               $"Ширина дорожки: {extWidth:F3} {((UnitItem)widthCombobox.SelectedItem).Name}\n" +
+                               $"Ширина дорожки: {extWidth:F3} {((UnitItem_OLD)widthCombobox.SelectedItem).Name}\n" +
                                $"Температура: {extResults.Temp:F1} °C\n" +
                                $"Сопротивление: {extResults.Resistance:F4} Ом\n" +
                                $"Падение напряжения: {extResults.VoltageDrop:F4} В\n" +
                                $"Рассеиваемая мощность: {extResults.Power:F4} Вт\n\n" +
 
                                $"ВНУТРЕННИЕ СЛОИ:\n" +
-                               $"Ширина дорожки: {intWidth:F3} {((UnitItem)widthCombobox.SelectedItem).Name}\n" +
+                               $"Ширина дорожки: {intWidth:F3} {((UnitItem_OLD)widthCombobox.SelectedItem).Name}\n" +
                                $"Температура: {intResults.Temp:F1} °C\n" +
                                $"Сопротивление: {intResults.Resistance:F4} Ом\n" +
                                $"Падение напряжения: {intResults.VoltageDrop:F4} В\n" +
@@ -255,33 +240,32 @@ namespace track_widths.Desktop.Views
 
 
         private (double width, (double Temp, double Resistance, double VoltageDrop, double Power))
-    CalculateLayer(double current, double ambientTemp, double thickness, double tempRise, double length, bool isExternal)
+    CalculateLayer(double Amperage, double AmbientTemperature, double TraceThikness, double RiseTemperature, double TraceLength, bool isExternal)
         {
-            // Точные константы из IPC-2221 (с учетом поправочного коэффициента 0.92)
-            double k = isExternal ? 0.048 * 0.92 : 0.024 * 0.92;
+            double k = isExternal ? 0.048 : 0.024;
             double b = 0.44;
             double c = 0.725;
 
             // Проверка входных значений
-            if (current <= 0) throw new ArgumentException("Ток должен быть положительным");
-            if (thickness <= 0) throw new ArgumentException("Толщина должна быть положительной");
-            if (tempRise <= 0 || tempRise > 100) throw new ArgumentException("Некорректное повышение температуры (0-100°C)");
-            if (length <= 0) throw new ArgumentException("Длина должна быть положительной");
+            if (Amperage <= 0) throw new ArgumentException("Ток должен быть положительным");
+            if (TraceThikness <= 0) throw new ArgumentException("Толщина должна быть положительной");
+            if (RiseTemperature <= 0 || RiseTemperature > 100) throw new ArgumentException("Некорректное повышение температуры (0-100°C)");
+            if (TraceLength <= 0) throw new ArgumentException("Длина должна быть положительной");
 
             // Расчет площади поперечного сечения (в милах²) по формуле IPC-2221
-            double area = Math.Pow(current / (k * Math.Pow(tempRise, b)), 1.0 / c);
+            double S = Math.Pow(Amperage / (k * Math.Pow(RiseTemperature, b)), 1.0 / c);
 
             // Расчет ширины (в милах)
-            double width = area / thickness;
+            double W = S / TraceThikness;
 
             // Расчет температуры дорожки
-            double trackTemp = ambientTemp + tempRise;
+            double trackTemp = AmbientTemperature + RiseTemperature;
 
             // Конвертация длины в метры
-            double lengthM = length / 1000.0;
+            double lengthM = TraceLength / 1000.0;
 
             // Расчет площади в мм² (1 мил = 0.0254 мм)
-            double areaMm2 = (width * 0.0254) * (thickness * 0.0254);
+            double areaMm2 = (W * 0.0254) * (TraceThikness * 0.0254);
 
             // Удельное сопротивление меди (Ом·мм²/м)
             const double resistivity = 0.01678; // Более точное значение
@@ -290,12 +274,12 @@ namespace track_widths.Desktop.Views
             double resistance = resistivity * lengthM / areaMm2;
 
             // Расчет падения напряжения
-            double voltageDrop = current * resistance;
+            double voltageDrop = Amperage * resistance;
 
             // Расчет рассеиваемой мощности
-            double power = current * voltageDrop; // Более точная формула: P = I*V
+            double power = Amperage * voltageDrop;
 
-            return (width, (trackTemp, resistance, voltageDrop, power));
+            return (W, (trackTemp, resistance, voltageDrop, power));
         }
         #endregion
     }

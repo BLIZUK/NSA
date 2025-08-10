@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Folder Include="Core\Services\" />
+    <Folder Include="Desktop\Views\CalculateTrack\" />
   </ItemGroup>
 
 </Project>

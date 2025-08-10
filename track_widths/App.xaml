@@ -7,7 +7,13 @@
 
     <Application.Resources>
 
+        <system:String x:Key="InputLabel">Входные данные:</system:String>
         <system:String x:Key="AmperageLabel">Максимальный ток:</system:String>
+        <system:String x:Key="WidthLabel">Единицы измерения ширины:</system:String>
+        <system:String x:Key="ThicknessLabel">Толщина дорожки:</system:String>
+        <system:String x:Key="RiseTempLabel">Повышение температуры:</system:String>
+        <system:String x:Key="AmbientTempLabel">Длина дорожки:</system:String>
+        <system:String x:Key="LengthLabel">Температура окружающей среды:</system:String>
         <system:String x:Key="RequiredField">*</system:String>
 
         <Style x:Key="InputFieldStyle" TargetType="TextBox">

@@ -9,43 +9,8 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
 {
     public class MainViewModel : ViewModelBase
     {
-        // Свойства для привязки данных
-        private string _amperageError;
-        public string AmperageError
-        {
-            get => _amperageError;
-            set => SetField(ref _amperageError, value);
-        }
-
-        // Для каждого свойства добавляем валидацию
-        private string _amperageText;
-        public string AmperageText
-        {
-            get => _amperageText;
-            set
-            {
-                SetField(ref _amperageText, value);
-                ValidateAmperage(value);
-            }
-        }
-
-        private void ValidateAmperage(string value)
-        {
-            if (value == "*")
-            {
-                AmperageError = "Поле обязательно для заполнения";
-            }
-            else if (!string.IsNullOrEmpty(value) &&
-                    !double.TryParse(value.Replace('.', ','), out _))
-            {
-                AmperageError = "Некорректное числовое значение";
-            }
-            else
-            {
-                AmperageError = null;
-            }
-        }
-
+        #region Поля
+        public string? AmperageText { get; set; }
         public string? ThicknessText { get; set; }
         public string? RiseTempText { get; set; }
         public string? AmbientTempText { get; set; }
@@ -70,12 +35,14 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
 
         // Команда для расчета
         public RelayCommand CalculateCommand { get; }
+        #endregion
 
         public MainViewModel()
         {
             InitializeUnits();
             CalculateCommand = new RelayCommand(_ => Calculate());
         }
+
 
         private void InitializeUnits()
         {
@@ -142,6 +109,7 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
             return value * unit.Multiplier;
         }
 
+
         private void Calculate()
         {
             try
@@ -163,14 +131,6 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка расчета",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private double HandleEmptyValue(string text, UnitItem unit, string fieldName)
-        {
-            if (text == "*")
-                throw new ArgumentException($"{fieldName} не может быть пустым");
-
-            return GetValue(text, unit);
         }
 
 

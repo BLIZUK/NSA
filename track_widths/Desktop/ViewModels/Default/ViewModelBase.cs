@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+
 namespace track_widths.Desktop.ViewModels.Default
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

@@ -1,4 +1,4 @@
-﻿namespace track_widths.Core
+﻿namespace track_widths.Core.Models
 {
     public class TrackCalculator
     {
@@ -42,7 +42,7 @@
             double lengthM = length / 1000.0;
 
             // Расчет площади в мм² (1 мил = 0.0254 мм)
-            double areaMm2 = (W * 0.0254) * (thickness * 0.0254);
+            double areaMm2 = W * 0.0254 * (thickness * 0.0254);
 
             // Удельное сопротивление меди (Ом·мм²/м)
             const double resistivity = 0.01678; // Более точное значение

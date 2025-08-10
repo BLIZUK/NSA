@@ -1,15 +1,9 @@
-﻿namespace track_widths.Core
+﻿namespace track_widths.Core.Models
 {
-    public class UnitItem
+    public class UnitItem(string name, double multiplier)
     {
-        public string Name { get; }
-        public double Multiplier { get; }
-
-        public UnitItem(string name, double multiplier)
-        {
-            Name = name;
-            Multiplier = multiplier;
-        }
+        public string Name { get; } = name;
+        public double Multiplier { get; } = multiplier;
 
         public override string ToString() => Name;
     }

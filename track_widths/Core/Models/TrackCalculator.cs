@@ -5,7 +5,6 @@
         public CalculationResult Calculate(double current, double ambientTemp, double thickness,
                                           double tempRise, double length)
         {
-            // Перенесенная логика из CalculateLayer
             var (extWidth, extResults) = CalculateLayer(current, ambientTemp, thickness, tempRise, length, true);
             var (intWidth, intResults) = CalculateLayer(current, ambientTemp, thickness, tempRise, length, false);
 
@@ -14,6 +13,7 @@
                 intWidth, intResults.Temp, intResults.Resistance, intResults.VoltageDrop, intResults.Power
             );
         }
+
 
         private (double width, (double Temp, double Resistance, double VoltageDrop, double Power))
             CalculateLayer(double current, double ambientTemp, double thickness, double tempRise,

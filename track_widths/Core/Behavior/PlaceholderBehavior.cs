@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
+
 namespace track_widths.Core.Behavior
 {
     public class PlaceholderBehavior : Behavior<TextBox>
@@ -14,10 +15,13 @@ namespace track_widths.Core.Behavior
             AssociatedObject.LostFocus += OnLostFocus;
             AssociatedObject.PreviewKeyDown += OnPreviewKeyDown;
 
-            // Инициализация звездочки
+
             if (string.IsNullOrEmpty(AssociatedObject.Text))
+            {
                 AssociatedObject.Text = "*";
+            }
         }
+
 
         protected override void OnDetaching()
         {
@@ -27,6 +31,7 @@ namespace track_widths.Core.Behavior
             AssociatedObject.PreviewKeyDown -= OnPreviewKeyDown;
         }
 
+
         private void OnGotFocus(object sender, RoutedEventArgs e)
         {
             if (AssociatedObject.Text == "*")
@@ -34,6 +39,7 @@ namespace track_widths.Core.Behavior
                 AssociatedObject.Text = string.Empty;
             }
         }
+
 
         private void OnLostFocus(object sender, RoutedEventArgs e)
         {

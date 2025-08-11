@@ -32,7 +32,7 @@
             <RowDefinition Height="24*"/>
         </Grid.RowDefinitions>
 
-        <!-- ComboBox с привязкой к ViewModel -->
+        <!-- ComboBox -->
         <ComboBox Grid.Row="1" Grid.Column="2"
                   ItemsSource="{Binding AmperageUnits}"
                   SelectedItem="{Binding SelectedAmperageUnit}"
@@ -59,7 +59,6 @@
                   Height="48" 
                   VerticalAlignment="Top"/>
 
-        <!-- Отдельные ComboBox для каждой температуры -->
         <ComboBox Grid.Row="4" Grid.Column="2"
                   ItemsSource="{Binding TempUnits}"
                   SelectedItem="{Binding SelectedRiseTempUnit}"
@@ -87,59 +86,65 @@
                   Height="48" 
                   VerticalAlignment="Top"/>
 
-        <!-- TextBox с поведением для плейсхолдера -->
-        <TextBox Grid.Row="1" Grid.Column="1"
-                 Text="{StaticResource RequiredField}"
+        <!-- TextBox  -->
+
+        <TextBox  Grid.Row="1" Grid.Column="1"
+                 Text="{Binding AmperageText, UpdateSourceTrigger=PropertyChanged}"
                  Margin="3,3,3,0"
                  Height="48" 
                  VerticalAlignment="Top"
                  Style="{StaticResource InputFieldStyle}">
             <i:Interaction.Behaviors>
                 <behaviors:PlaceholderBehavior/>
+                <behaviors:NumericInputBehavior/>
             </i:Interaction.Behaviors>
         </TextBox>
 
         <TextBox Grid.Row="3" Grid.Column="1"
-                 Text="{StaticResource RequiredField}"
+                 Text="{Binding ThicknessText, UpdateSourceTrigger=PropertyChanged}"
                  Margin="3,3,3,0"
                  Height="48"
                  VerticalAlignment="Top"
                  Style="{StaticResource InputFieldStyle}">
             <i:Interaction.Behaviors>
                 <behaviors:PlaceholderBehavior/>
+                <behaviors:NumericInputBehavior/>
             </i:Interaction.Behaviors>
         </TextBox>
 
         <TextBox Grid.Row="4" Grid.Column="1"
-                 Text="{StaticResource RequiredField}"
+                 Text="{Binding RiseTempText, UpdateSourceTrigger=PropertyChanged}"
                  Margin="3,3,3,0"
                  Height="48" 
                  VerticalAlignment="Top"
                  Style="{StaticResource InputFieldStyle}">
             <i:Interaction.Behaviors>
                 <behaviors:PlaceholderBehavior/>
+                <behaviors:NumericInputBehavior/>
             </i:Interaction.Behaviors>
         </TextBox>
 
         <TextBox Grid.Row="5" Grid.Column="1"
-                 Text="{StaticResource RequiredField}"
+                 Text="{Binding AmbientTempText, UpdateSourceTrigger=PropertyChanged}"
                  Margin="3,3,3,0"
                  Height="49" 
                  VerticalAlignment="Top"
                  Style="{StaticResource InputFieldStyle}">
             <i:Interaction.Behaviors>
                 <behaviors:PlaceholderBehavior/>
+                <behaviors:NumericInputBehavior/>
             </i:Interaction.Behaviors>
         </TextBox>
 
         <TextBox Grid.Row="6" Grid.Column="1"
-                 Text="{StaticResource RequiredField}"
+                 Text="{Binding LengthText, UpdateSourceTrigger=PropertyChanged}"
                  Margin="3,3,3,0"
                  Height="48" 
                  VerticalAlignment="Top"
                  Style="{StaticResource InputFieldStyle}">
             <i:Interaction.Behaviors>
                 <behaviors:PlaceholderBehavior/>
+                <behaviors:NumericInputBehavior/>
             </i:Interaction.Behaviors>
         </TextBox>
 
@@ -194,7 +199,7 @@
                HorizontalAlignment="Left" 
                Width="229"/>
 
-        <!-- Кнопка с привязкой команды -->
+        <!-- Button -->
         <Button Grid.Row="7" Grid.Column="1"
                 Command="{Binding CalculateCommand}"
                 Margin="1,8,32,0" 

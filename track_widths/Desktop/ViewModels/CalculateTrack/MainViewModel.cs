@@ -9,7 +9,6 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
 {
     public class MainViewModel : ViewModelBase
     {
-        #region Поля
         public string? AmperageText { get; set; }
         public string? ThicknessText { get; set; }
         public string? RiseTempText { get; set; }
@@ -17,14 +16,12 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
         public string? LengthText { get; set; }
 
         // Свойства для выбранных единиц измерения
-        public UnitItem? SelectedAmperageUnit { get; set; }
-        public UnitItem? SelectedWidthUnits { get; set; }
-        public UnitItem? SelectedThicknessUnits { get; set; }
-        public UnitItem? SelectedLengthUnits { get; set; }
-
-        // Отдельные свойства для температур
-        public UnitItem? SelectedAmbientTempUnit { get; set; }
-        public UnitItem? SelectedRiseTempUnit { get; set; }
+        public UnitItem SelectedAmperageUnit { get; set; } = null!;
+        public UnitItem SelectedWidthUnits { get; set; } = null!;
+        public UnitItem SelectedThicknessUnits { get; set; } = null!;
+        public UnitItem SelectedAmbientTempUnit { get; set; } = null!;
+        public UnitItem SelectedRiseTempUnit { get; set; } = null!;
+        public UnitItem SelectedLengthUnits { get; set; } = null!;
 
         // Коллекции для ComboBox
         public List<UnitItem> AmperageUnits { get; } = [];
@@ -35,10 +32,16 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
 
         // Команда для расчета
         public RelayCommand CalculateCommand { get; }
-        #endregion
+
 
         public MainViewModel()
         {
+            AmperageText = "*";
+            ThicknessText = "*";
+            RiseTempText = "*";
+            AmbientTempText = "*";
+            LengthText = "*";
+        
             InitializeUnits();
             CalculateCommand = new RelayCommand(_ => Calculate());
         }
@@ -47,14 +50,15 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
         private void InitializeUnits()
         {
             
-            AmperageUnits.AddRange([
+            AmperageUnits.AddRange
+            ([
                 new UnitItem("A", 1.0),
                 new UnitItem("mA", 0.001),
                 new UnitItem("mkA", 0.000001)
             ]);
 
-            WidthUnits.AddRange([
-            
+            WidthUnits.AddRange
+            ([
                 new UnitItem ("мил", 0.0254),
                 new UnitItem ("см", 10.0),
                 new UnitItem ("мм",1.0),
@@ -62,8 +66,8 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                 new UnitItem("дюйм", 25.4)
             ]);
 
-            ThicknessUnits.AddRange([
-
+            ThicknessUnits.AddRange
+            ([
                 new UnitItem("унция/фут²", 1.37),
                 new UnitItem("мил", 1.0),
                 new UnitItem("мм", 39.3701),    
@@ -71,13 +75,8 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                 new UnitItem("дюйм", 1000.0)    
             ]);
 
-            TempUnits.AddRange([
-                new UnitItem("°C", 1.0),
-                new UnitItem("°K", 1.0)
-            ]);
-
-            LengthUnits.AddRange([
-
+            LengthUnits.AddRange
+            ([
                 new UnitItem ("мил", 0.0254),
                 new UnitItem ("см", 10.0),
                 new UnitItem ("мм",1.0),
@@ -85,28 +84,18 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                 new UnitItem("дюйм", 25.4)
             ]);
 
-            // Установка значений по умолчанию
+            TempUnits.AddRange
+            ([
+                new UnitItem("°C", 1.0),
+                new UnitItem("°K", 1.0)
+            ]);
+
             SelectedAmperageUnit = AmperageUnits[0];
             SelectedWidthUnits = WidthUnits[2];
             SelectedThicknessUnits = ThicknessUnits[3];
             SelectedLengthUnits = LengthUnits[2];
-
             SelectedAmbientTempUnit = TempUnits[0]; 
             SelectedRiseTempUnit = TempUnits[0];    
-        }
-
-
-        private double GetValue(string text, UnitItem unit)
-        {
-            if (text == "*") return double.NaN;
-
-            if (!double.TryParse(text.Replace('.', ','), NumberStyles.Any,
-                CultureInfo.InvariantCulture, out double value))
-            {
-                throw new ArgumentException("Некорректное числовое значение");
-            }
-
-            return value * unit.Multiplier;
         }
 
 
@@ -114,6 +103,17 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
         {
             try
             {
+                if (string.IsNullOrEmpty(AmperageText) || AmperageText == "*")
+                    throw new ArgumentException("Введите максимальный ток");
+                if (string.IsNullOrEmpty(ThicknessText) || ThicknessText == "*")
+                    throw new ArgumentException("Введите толщину дорожки");
+                if (string.IsNullOrEmpty(RiseTempText) || RiseTempText == "*")
+                    throw new ArgumentException("Введите повышение температуры");
+                if (string.IsNullOrEmpty(AmbientTempText) || AmbientTempText == "*")
+                    throw new ArgumentException("Введите температуру окружающей среды");
+                if (string.IsNullOrEmpty(LengthText) || LengthText == "*")
+                    throw new ArgumentException("Введите длину дорожки");
+
                 double current = GetValue(AmperageText, SelectedAmperageUnit);
                 double ambientTemp = GetValue(AmbientTempText, SelectedAmbientTempUnit);
                 double thickness = GetValue(ThicknessText, SelectedThicknessUnits);
@@ -123,7 +123,6 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                 var calculator = new TrackCalculator();
                 var result = calculator.Calculate(current, ambientTemp, thickness, tempRise, length);
 
-                // Отображение результатов
                 ShowResults(result);
             }
             catch (Exception ex)
@@ -131,6 +130,26 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка расчета",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+
+        private static double GetValue(string text, UnitItem unit)
+        {
+            if (string.IsNullOrEmpty(text) || text == "*")
+                throw new ArgumentException("Поле не может быть пустым");
+
+            string normalizedText = text.Replace(',', '.');
+
+            if (!double.TryParse(normalizedText, NumberStyles.Any,
+                                CultureInfo.InvariantCulture, out double value))
+            {
+                if (!double.TryParse(text, NumberStyles.Any, CultureInfo.CurrentCulture, out value))
+                {
+                    throw new ArgumentException("Некорректное числовое значение");
+                }
+            }
+
+            return value * unit.Multiplier;
         }
 
 

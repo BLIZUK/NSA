@@ -14,7 +14,6 @@
         <system:String x:Key="RiseTempLabel">Повышение температуры:</system:String>
         <system:String x:Key="AmbientTempLabel">Длина дорожки:</system:String>
         <system:String x:Key="LengthLabel">Температура окружающей среды:</system:String>
-        <system:String x:Key="RequiredField">*</system:String>
 
         <Style x:Key="InputFieldStyle" TargetType="TextBox">
             <Setter Property="Margin" Value="0,5"/>
@@ -23,8 +22,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="#CCCCCC"/>
         </Style>
-        
-        
+
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Padding" Value="20,10"/>
             <Setter Property="FontSize" Value="14"/>

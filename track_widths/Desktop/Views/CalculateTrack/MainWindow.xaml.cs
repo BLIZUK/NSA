@@ -8,7 +8,7 @@ namespace track_widths.Desktop.Views.CalculateTrack
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new track_widths.Desktop.ViewModels.CalculateTrack.MainViewModel();
+            DataContext = new ViewModels.CalculateTrack.MainViewModel();
         }
     }
 }

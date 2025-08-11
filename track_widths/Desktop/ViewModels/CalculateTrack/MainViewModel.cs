@@ -115,10 +115,16 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                     throw new ArgumentException("Введите длину дорожки");
 
                 double current = GetValue(AmperageText, SelectedAmperageUnit);
-                double ambientTemp = GetValue(AmbientTempText, SelectedAmbientTempUnit);
+                double ambientTemp = GetValue(AmbientTempText, SelectedAmbientTempUnit, true);
+                if (ambientTemp < -273.15 || ambientTemp > 100)
+                    throw new ArgumentException("Температура окружения должна быть от -273.15°C до 100°C");
                 double thickness = GetValue(ThicknessText, SelectedThicknessUnits);
                 double tempRise = GetValue(RiseTempText, SelectedRiseTempUnit);
+                if (tempRise <= 0 || tempRise > 100)
+                    throw new ArgumentException("Повышение температуры должно быть от 1°C до 100°C");
                 double length = GetValue(LengthText, SelectedLengthUnits);
+
+
 
                 var calculator = new TrackCalculator();
                 var result = calculator.Calculate(current, ambientTemp, thickness, tempRise, length);
@@ -133,7 +139,7 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
         }
 
 
-        private static double GetValue(string text, UnitItem unit)
+        private static double GetValue(string text, UnitItem unit, bool isAmbient = false)
         {
             if (string.IsNullOrEmpty(text) || text == "*")
                 throw new ArgumentException("Поле не может быть пустым");
@@ -147,6 +153,15 @@ namespace track_widths.Desktop.ViewModels.CalculateTrack
                 {
                     throw new ArgumentException("Некорректное числовое значение");
                 }
+            }
+
+            if (unit.Name == "°K")
+            {
+                value -= 273.15; // K → °C
+
+                if (!isAmbient && value < 0)
+                    throw new ArgumentException("Температура в Кельвинах не может быть ниже 273.15");
+                return value;
             }
 
             return value * unit.Multiplier;

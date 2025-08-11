@@ -29,7 +29,7 @@
             if (tempRise <= 0 || tempRise > 100) throw new ArgumentException("Некорректное повышение температуры (0-100°C)");
             if (length <= 0) throw new ArgumentException("Длина должна быть положительной");
 
-            // Расчет площади поперечного сечения (в милах²) по формуле IPC-2221
+
             double S = Math.Pow(current / (k * Math.Pow(tempRise, b)), 1.0 / c);
 
             // Расчет ширины (в милах)

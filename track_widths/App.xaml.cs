@@ -12,15 +12,6 @@ namespace track_widths
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            // Установка культуры для всего приложения
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("ru-RU");
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("ru-RU");
-
-            FrameworkElement.LanguageProperty.OverrideMetadata(
-                typeof(FrameworkElement),
-                new FrameworkPropertyMetadata(
-                    XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
-
             base.OnStartup(e);
         }
 

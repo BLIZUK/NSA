@@ -7,7 +7,7 @@
         xmlns:behaviors="clr-namespace:track_widths.Core.Behavior"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        Title="Калькулятор дорожек печатных плат" Height="450" Width="600">
+        Title="Калькулятор дорожек печатных плат" Height="450" Width="600" Icon="/Desktop/Views/CalculateTrack/calculator_14103.png">
 
     <Window.DataContext>
         <viewModels:MainViewModel/>
